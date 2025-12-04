@@ -11,9 +11,9 @@ export default function Page() {
       {/* Navigation */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
         <nav className="relative flex items-center justify-between w-full max-w-7xl px-6 md:px-8 py-4 
-                       bg-background/80 backdrop-blur-xl border border-border/40 
+                       bg-background/60 backdrop-blur-md border border-border/40 
                        rounded-full shadow-lg shadow-black/5
-                       transition-all duration-300 hover:shadow-xl hover:shadow-black/10">
+                       transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:bg-background/70">
           {/* Logo */}
           <Link href="/" className="text-xl md:text-2xl font-light tracking-tight hover:text-sky-500 transition-colors">
             forlarge
