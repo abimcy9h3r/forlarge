@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Zap, Globe, Shield, TrendingUp, Upload, DollarSign, Check, Star } from "lucide-react";
+import Waves from "@/components/ui/waves";
 
 export default function Page() {
   return (
@@ -22,15 +23,34 @@ export default function Page() {
         
         <div className="flex items-center gap-6">
           <ThemeToggle />
-          <Button variant="ghost" className="text-sm font-light">Log In</Button>
-          <Button className="bg-sky-500 hover:bg-sky-600 text-white font-light">
-            Get Started
-          </Button>
+          <Link href="/login">
+            <Button variant="ghost" className="text-sm font-light">Log In</Button>
+          </Link>
+          <Link href="/signup">
+            <Button className="bg-sky-500 hover:bg-sky-600 text-white font-light">
+              Get Started
+            </Button>
+          </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
       <section className="relative z-10 container mx-auto px-8 md:px-16 pt-32 pb-40">
+        {/* Waves Background Effect */}
+        <div className="absolute inset-0 -z-10">
+          <Waves
+            waveSpeedX={0.02}
+            waveSpeedY={0.01}
+            waveAmpX={40}
+            waveAmpY={20}
+            friction={0.9}
+            tension={0.01}
+            maxCursorMove={120}
+            xGap={12}
+            yGap={36}
+          />
+        </div>
+        
         <div className="max-w-5xl mx-auto text-center space-y-12">
           <div className="inline-block bg-sky-500/10 text-sky-500 px-6 py-2 rounded-full text-sm font-light border border-sky-500/20">
             Web3 Creator Commerce Platform
