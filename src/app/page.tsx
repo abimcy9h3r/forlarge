@@ -9,53 +9,52 @@ export default function Page() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
-        <nav className="relative flex items-center justify-between w-full max-w-7xl px-6 md:px-8 py-4 
-                       bg-background/60 backdrop-blur-md border border-border/40 
-                       rounded-full shadow-lg shadow-black/5
-                       transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:bg-background/70">
-          {/* Logo */}
-          <Link href="/" className="text-xl md:text-2xl font-light tracking-tight hover:text-sky-500 transition-colors">
-            forlarge
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 
+                     flex items-center justify-between w-[calc(100%-2rem)] max-w-7xl px-6 md:px-8 py-4 
+                     bg-background/60 backdrop-blur-md border border-border/40 
+                     rounded-full shadow-lg shadow-black/5
+                     transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:bg-background/70">
+        {/* Logo */}
+        <Link href="/" className="text-xl md:text-2xl font-light tracking-tight hover:text-sky-500 transition-colors">
+          forlarge
+        </Link>
+        
+        {/* Center Nav Links */}
+        <div className="hidden md:flex items-center gap-8 lg:gap-10 text-sm font-light absolute left-1/2 -translate-x-1/2">
+          <Link href="#features" className="hover:text-sky-500 transition-colors relative group">
+            Features
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
           </Link>
-          
-          {/* Center Nav Links */}
-          <div className="hidden md:flex items-center gap-8 lg:gap-10 text-sm font-light absolute left-1/2 -translate-x-1/2">
-            <Link href="#features" className="hover:text-sky-500 transition-colors relative group">
-              Features
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
-            </Link>
-            <Link href="#how-it-works" className="hover:text-sky-500 transition-colors relative group">
-              How It Works
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
-            </Link>
-            <Link href="#testimonials" className="hover:text-sky-500 transition-colors relative group">
-              Testimonials
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
-            </Link>
-            <Link href="/explore" className="hover:text-sky-500 transition-colors relative group">
-              Explore
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
-            </Link>
-          </div>
-          
-          {/* Right Actions */}
-          <div className="flex items-center gap-3 md:gap-4">
-            <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" className="text-sm font-light h-9 px-4 hover:bg-sky-500/10">
-                Log In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-sky-500 hover:bg-sky-600 text-white font-light h-9 px-5 
-                               shadow-lg shadow-sky-500/25 hover:shadow-sky-500/40 transition-all">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </nav>
-      </div>
+          <Link href="#how-it-works" className="hover:text-sky-500 transition-colors relative group">
+            How It Works
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
+          </Link>
+          <Link href="#testimonials" className="hover:text-sky-500 transition-colors relative group">
+            Testimonials
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
+          </Link>
+          <Link href="/explore" className="hover:text-sky-500 transition-colors relative group">
+            Explore
+            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-sky-500 transition-all group-hover:w-full"></span>
+          </Link>
+        </div>
+        
+        {/* Right Actions */}
+        <div className="flex items-center gap-3 md:gap-4">
+          <ThemeToggle />
+          <Link href="/login">
+            <Button variant="ghost" className="text-sm font-light h-9 px-4 hover:bg-sky-500/10">
+              Log In
+            </Button>
+          </Link>
+          <Link href="/signup">
+            <Button className="bg-sky-500 hover:bg-sky-600 text-white font-light h-9 px-5 
+                             shadow-lg shadow-sky-500/25 hover:shadow-sky-500/40 transition-all">
+              Get Started
+            </Button>
+          </Link>
+        </div>
+      </nav>
       
       {/* Spacer for fixed nav */}
       <div className="h-24"></div>
