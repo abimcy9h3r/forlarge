@@ -38,35 +38,9 @@ export default function SignupPage() {
       setError(error.message)
       setLoading(false)
     } else {
-      setSuccess(true)
-      setLoading(false)
+      // Redirect to onboarding after successful signup
+      router.push("/onboarding")
     }
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-sky-500/10 via-background to-background">
-        <div className="w-full max-w-md space-y-8 text-center">
-          <div className="space-y-4">
-            <div className="w-16 h-16 rounded-full bg-sky-500/10 flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h1 className="text-4xl font-light tracking-tight">Check your email</h1>
-            <p className="text-muted-foreground font-light">
-              We've sent you a confirmation link to <strong>{email}</strong>
-            </p>
-          </div>
-          <Button
-            onClick={() => router.push("/login")}
-            className="bg-sky-500 hover:bg-sky-600 text-white font-light"
-          >
-            Go to Login
-          </Button>
-        </div>
-      </div>
-    )
   }
 
   return (

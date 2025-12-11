@@ -1,56 +1,87 @@
+'use client';
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Zap, Globe, Shield, TrendingUp, Upload, DollarSign, Check, Star } from "lucide-react";
 import Waves from "@/components/ui/waves";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsNavVisible(false);
+      } else {
+        setIsNavVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-8 md:px-16 py-8">
-        <Link href="/" className="text-2xl font-light tracking-tight hover:text-sky-500 transition-colors">
-          forlarge
-        </Link>
-        
-        <div className="hidden md:flex items-center gap-12 text-sm font-light">
-          <Link href="#features" className="hover:text-sky-500 transition-colors">Features</Link>
-          <Link href="#how-it-works" className="hover:text-sky-500 transition-colors">How It Works</Link>
-          <Link href="#testimonials" className="hover:text-sky-500 transition-colors">Testimonials</Link>
-          <Link href="/explore" className="hover:text-sky-500 transition-colors">Explore</Link>
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <ThemeToggle />
-          <Link href="/login">
-            <Button variant="ghost" className="text-sm font-light">Log In</Button>
+      {/* Waves Background Effect - Full Screen */}
+      <div className="fixed inset-0 z-0">
+        <Waves
+          waveSpeedX={0.02}
+          waveSpeedY={0.01}
+          waveAmpX={40}
+          waveAmpY={20}
+          friction={0.9}
+          tension={0.01}
+          maxCursorMove={120}
+          xGap={12}
+          yGap={36}
+        />
+      </div>
+
+      {/* Navigation - Floating Capsule */}
+      <nav className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${
+        isNavVisible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'
+      }`}>
+        <div className="flex items-center gap-6 px-4 py-1.5 rounded-full bg-background/80 backdrop-blur-lg border border-border shadow-lg">
+          <Link href="/" className="text-base font-light tracking-tight hover:text-sky-500 transition-colors">
+            forlarge
           </Link>
-          <Link href="/signup">
-            <Button className="bg-sky-500 hover:bg-sky-600 text-white font-light">
-              Get Started
-            </Button>
-          </Link>
+          
+          <div className="h-4 w-px bg-border" />
+          
+          <div className="hidden md:flex items-center gap-1 text-xs font-light">
+            <Link href="#features" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">Features</Link>
+            <Link href="#how-it-works" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">How It Works</Link>
+            <Link href="#testimonials" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">Testimonials</Link>
+            <Link href="/explore" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">Explore</Link>
+          </div>
+          
+          <div className="h-4 w-px bg-border" />
+          
+          <div className="flex items-center gap-1.5">
+            <ThemeToggle />
+            <Link href="/login">
+              <Button variant="ghost" size="sm" className="text-xs font-light rounded-full h-7 px-3">Log In</Button>
+            </Link>
+            <Link href="/signup">
+              <Button size="sm" className="bg-sky-500 hover:bg-sky-600 text-white font-light rounded-full h-7 px-3 text-xs">
+                Get Started
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <section className="relative z-10 container mx-auto px-8 md:px-16 pt-32 pb-40">
-        {/* Waves Background Effect */}
-        <div className="absolute inset-0 -z-10">
-          <Waves
-            waveSpeedX={0.02}
-            waveSpeedY={0.01}
-            waveAmpX={40}
-            waveAmpY={20}
-            friction={0.9}
-            tension={0.01}
-            maxCursorMove={120}
-            xGap={12}
-            yGap={36}
-          />
-        </div>
-        
         <div className="max-w-5xl mx-auto text-center space-y-12">
           <div className="inline-block bg-sky-500/10 text-sky-500 px-6 py-2 rounded-full text-sm font-light border border-sky-500/20">
             Web3 Creator Commerce Platform

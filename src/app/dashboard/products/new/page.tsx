@@ -32,6 +32,15 @@ export default function NewProductPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Not authenticated")
 
+      // Get user's profile to use user_id
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      if (!profile) throw new Error("Profile not found")
+
       let fileUrl = ""
       let coverImageUrl = ""
 
@@ -70,7 +79,7 @@ export default function NewProductPage() {
       const { error: insertError } = await supabase
         .from("products")
         .insert({
-          creator_id: user.id,
+          user_id: user.id,
           title,
           description,
           price: parseFloat(price),
@@ -82,8 +91,7 @@ export default function NewProductPage() {
 
       if (insertError) throw insertError
 
-      router.push("/dashboard")
-      router.refresh()
+      router.push("/dashboard/products")
     } catch (err: any) {
       setError(err.message)
       setLoading(false)
