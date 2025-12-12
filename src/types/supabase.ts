@@ -46,6 +46,57 @@ export type Database = {
           },
         ]
       }
+      download_access: {
+        Row: {
+          access_token: string
+          buyer_wallet_address: string
+          created_at: string | null
+          download_count: number | null
+          expires_at: string | null
+          id: string
+          max_downloads: number | null
+          product_id: string
+          transaction_id: string
+        }
+        Insert: {
+          access_token: string
+          buyer_wallet_address: string
+          created_at?: string | null
+          download_count?: number | null
+          expires_at?: string | null
+          id?: string
+          max_downloads?: number | null
+          product_id: string
+          transaction_id: string
+        }
+        Update: {
+          access_token?: string
+          buyer_wallet_address?: string
+          created_at?: string | null
+          download_count?: number | null
+          expires_at?: string | null
+          id?: string
+          max_downloads?: number | null
+          product_id?: string
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_access_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "download_access_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string | null
@@ -54,11 +105,16 @@ export type Database = {
           creator_id: string
           description: string | null
           downloads: number | null
+          external_file_url: string | null
+          file_size_mb: number | null
+          file_type: string | null
           file_url: string
           id: string
           is_published: boolean | null
+          preview_file_url: string | null
           preview_url: string | null
           price: number
+          slug: string | null
           tags: string[] | null
           title: string
           updated_at: string
@@ -71,11 +127,16 @@ export type Database = {
           creator_id: string
           description?: string | null
           downloads?: number | null
+          external_file_url?: string | null
+          file_size_mb?: number | null
+          file_type?: string | null
           file_url: string
           id?: string
           is_published?: boolean | null
+          preview_file_url?: string | null
           preview_url?: string | null
           price: number
+          slug?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string
@@ -88,11 +149,16 @@ export type Database = {
           creator_id?: string
           description?: string | null
           downloads?: number | null
+          external_file_url?: string | null
+          file_size_mb?: number | null
+          file_type?: string | null
           file_url?: string
           id?: string
           is_published?: boolean | null
+          preview_file_url?: string | null
           preview_url?: string | null
           price?: number
+          slug?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string
@@ -175,6 +241,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          amount: number
+          buyer_wallet_address: string
+          chain: string
+          confirmed_at: string | null
+          created_at: string | null
+          creator_amount: number | null
+          currency: string
+          id: string
+          platform_fee: number | null
+          product_id: string
+          seller_wallet_address: string
+          status: string | null
+          tx_hash: string
+        }
+        Insert: {
+          amount: number
+          buyer_wallet_address: string
+          chain: string
+          confirmed_at?: string | null
+          created_at?: string | null
+          creator_amount?: number | null
+          currency: string
+          id?: string
+          platform_fee?: number | null
+          product_id: string
+          seller_wallet_address: string
+          status?: string | null
+          tx_hash: string
+        }
+        Update: {
+          amount?: number
+          buyer_wallet_address?: string
+          chain?: string
+          confirmed_at?: string | null
+          created_at?: string | null
+          creator_amount?: number | null
+          currency?: string
+          id?: string
+          platform_fee?: number | null
+          product_id?: string
+          seller_wallet_address?: string
+          status?: string | null
+          tx_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"

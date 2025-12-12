@@ -8,20 +8,39 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Upload, Loader2 } from "lucide-react"
+import { ArrowLeft, Upload, Loader2, Link as LinkIcon } from "lucide-react"
 import Link from "next/link"
+import { generateSlug } from "@/lib/utils/slug"
+import { validateFileSize, formatFileSize, isValidExternalUrl } from "@/lib/utils/file-validation"
 
 export default function NewProductPage() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [tags, setTags] = useState("")
+  const [uploadType, setUploadType] = useState<"direct" | "external">("direct")
   const [file, setFile] = useState<File | null>(null)
+  const [externalFileUrl, setExternalFileUrl] = useState("")
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
   const supabase = createClient()
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (!selectedFile) return
+
+    const validation = validateFileSize(selectedFile)
+    if (!validation.valid) {
+      setError(validation.error || "")
+      setFile(null)
+      return
+    }
+
+    setFile(selectedFile)
+    setError("")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,19 +51,36 @@ export default function NewProductPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Not authenticated")
 
-      // Get user's profile to use user_id
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', user.id)
-        .single()
+      if (uploadType === "external") {
+        if (!externalFileUrl) throw new Error("Please provide an external file URL")
+        if (!isValidExternalUrl(externalFileUrl)) {
+          throw new Error("Please use a valid file hosting service (Mega.nz, Google Drive, Dropbox, OneDrive)")
+        }
+      } else {
+        if (!file) throw new Error("Please select a file to upload")
+      }
 
-      if (!profile) throw new Error("Profile not found")
+      const baseSlug = generateSlug(title)
+      
+      const { data: existingProducts } = await supabase
+        .from('products')
+        .select('slug')
+        .eq('user_id', user.id)
+      
+      const existingSlugs = existingProducts?.map(p => p.slug).filter(Boolean) || []
+      let slug = baseSlug
+      let counter = 1
+      while (existingSlugs.includes(slug)) {
+        slug = `${baseSlug}-${counter}`
+        counter++
+      }
 
       let fileUrl = ""
       let coverImageUrl = ""
+      let fileSizeMB = 0
 
-      if (file) {
+      if (uploadType === "direct" && file) {
+        fileSizeMB = file.size / (1024 * 1024)
         const fileExt = file.name.split(".").pop()
         const fileName = `${user.id}/${Date.now()}.${fileExt}`
         const { data: fileData, error: fileError } = await supabase.storage
@@ -81,9 +117,13 @@ export default function NewProductPage() {
         .insert({
           user_id: user.id,
           title,
+          slug,
           description,
           price: parseFloat(price),
-          file_url: fileUrl,
+          file_type: uploadType,
+          file_url: uploadType === "direct" ? fileUrl : null,
+          external_file_url: uploadType === "external" ? externalFileUrl : null,
+          file_size_mb: uploadType === "direct" ? fileSizeMB : null,
           cover_image_url: coverImageUrl,
           tags: tags.split(",").map(tag => tag.trim()).filter(Boolean),
           is_published: false,
@@ -99,155 +139,173 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b border-border">
-        <div className="container mx-auto px-8 py-6">
-          <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-light text-muted-foreground hover:text-sky-500 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Link>
-        </div>
-      </nav>
+    <div className="flex-1 bg-background p-6 overflow-auto">
+      <div className="max-w-3xl mx-auto">
+        <Link href="/dashboard/products">
+          <Button variant="ghost" className="mb-6">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Products
+          </Button>
+        </Link>
 
-      <div className="container mx-auto px-8 py-12 max-w-3xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-light tracking-tight">Upload New Product</h1>
-          <p className="text-muted-foreground font-light mt-2">Add your digital product to start selling</p>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Create New Product</CardTitle>
+            <CardDescription>
+              Add a new digital product to your store
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-500 text-sm">
+                  {error}
+                </div>
+              )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg text-sm font-light">
-              {error}
-            </div>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-light">Product Details</CardTitle>
-              <CardDescription className="font-light">Basic information about your product</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title" className="font-light">Title</Label>
+                <Label htmlFor="title">Product Title *</Label>
                 <Input
                   id="title"
-                  placeholder="e.g., Dark Trap Beat Pack"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Beat Pack Vol. 1"
                   required
-                  className="font-light"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="font-light">Description</Label>
+                <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  placeholder="Describe your product..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={5}
-                  className="font-light"
+                  placeholder="Describe your product..."
+                  rows={4}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price" className="font-light">Price (USD)</Label>
+                <Label htmlFor="price">Price (USD) *</Label>
                 <Input
                   id="price"
                   type="number"
                   step="0.01"
-                  min="0"
-                  placeholder="9.99"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
+                  placeholder="29.99"
                   required
-                  className="font-light"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tags" className="font-light">Tags</Label>
+                <Label htmlFor="tags">Tags (comma separated)</Label>
                 <Input
                   id="tags"
-                  placeholder="trap, dark, beats (comma separated)"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
-                  className="font-light"
+                  placeholder="beats, hip-hop, trap"
                 />
               </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-light">Files</CardTitle>
-              <CardDescription className="font-light">Upload your product file and cover image</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="file" className="font-light">Product File</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-sky-500/50 transition-colors">
-                  <Upload className="w-8 h-8 mx-auto mb-4 text-muted-foreground" />
-                  <Input
-                    id="file"
-                    type="file"
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
-                    required
-                    className="font-light"
-                  />
-                  {file && (
-                    <p className="text-sm text-muted-foreground font-light mt-2">
-                      Selected: {file.name}
-                    </p>
-                  )}
+              <div className="space-y-4">
+                <Label>Product File *</Label>
+                <div className="flex gap-4 mb-4">
+                  <Button
+                    type="button"
+                    variant={uploadType === "direct" ? "default" : "outline"}
+                    onClick={() => setUploadType("direct")}
+                    className={uploadType === "direct" ? "bg-sky-500 hover:bg-sky-600" : ""}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Direct Upload
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={uploadType === "external" ? "default" : "outline"}
+                    onClick={() => setUploadType("external")}
+                    className={uploadType === "external" ? "bg-sky-500 hover:bg-sky-600" : ""}
+                  >
+                    <LinkIcon className="h-4 w-4 mr-2" />
+                    External Link
+                  </Button>
                 </div>
+
+                {uploadType === "direct" ? (
+                  <div className="space-y-2">
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                      <Input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <label htmlFor="file-upload" className="cursor-pointer">
+                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">
+                          {file ? file.name : "Click to upload file (max 200MB)"}
+                        </p>
+                        {file && (
+                          <p className="text-xs text-sky-500 mt-1">
+                            {formatFileSize(file.size)}
+                          </p>
+                        )}
+                      </label>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      For files larger than 200MB, use the External Link option
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Input
+                      value={externalFileUrl}
+                      onChange={(e) => setExternalFileUrl(e.target.value)}
+                      placeholder="https://mega.nz/file/... or Google Drive link"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Supported: Mega.nz, Google Drive, Dropbox, OneDrive
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="coverImage" className="font-light">Cover Image (Optional)</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-sky-500/50 transition-colors">
-                  <Upload className="w-8 h-8 mx-auto mb-4 text-muted-foreground" />
+                <Label htmlFor="cover-image">Cover Image</Label>
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
                   <Input
-                    id="coverImage"
                     type="file"
                     accept="image/*"
                     onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
-                    className="font-light"
+                    className="hidden"
+                    id="cover-upload"
                   />
-                  {coverImage && (
-                    <p className="text-sm text-muted-foreground font-light mt-2">
-                      Selected: {coverImage.name}
+                  <label htmlFor="cover-upload" className="cursor-pointer">
+                    <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
+                      {coverImage ? coverImage.name : "Click to upload cover image"}
                     </p>
-                  )}
+                  </label>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          <div className="flex gap-4">
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-sky-500 hover:bg-sky-600 text-white font-light"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                "Upload Product"
-              )}
-            </Button>
-            <Link href="/dashboard">
-              <Button type="button" variant="outline" className="font-light">
-                Cancel
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-sky-500 hover:bg-sky-600 text-white"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Creating Product...
+                  </>
+                ) : (
+                  "Create Product"
+                )}
               </Button>
-            </Link>
-          </div>
-        </form>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

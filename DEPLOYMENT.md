@@ -1,0 +1,417 @@
+# Forlarge Platform - Production Deployment Guide
+
+## 🌐 Domain Strategy
+
+### Primary Domains
+- **Main App:** `forlarge.app`
+- **Dashboard:** `dashboard.forlarge.app`
+- **API:** `api.forlarge.app` (optional, for future scaling)
+
+### Alternative Approach (Recommended for MVP)
+- **Main App:** `forlarge.app` (landing + auth)
+- **Dashboard:** `forlarge.app/dashboard` (authenticated routes)
+
+**Why this is better for MVP:**
+- ✅ Simpler SSL/DNS setup
+- ✅ Easier authentication flow
+- ✅ Lower infrastructure costs
+- ✅ Faster deployment
+- ✅ Can migrate to subdomain later
+
+---
+
+## 🔐 Environment Variables Required
+
+### Supabase (Already Set)
+```env
+SUPABASE_PROJECT_ID=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+### Privy (Wallet Authentication)
+```env
+NEXT_PUBLIC_PRIVY_APP_ID=cmj1snymi0140jo0c5w7xnclw
+PRIVY_APP_SECRET=privy_app_secret_29FDGSeZhf7jzJZtVJidiDwn5A4GN19xDemicDAvi79JqGWjsKxKBXpygqQNyryV7ML3ApdFynxH61k8CdH3JVuU
+```
+
+### Base Network (Infura)
+```env
+NEXT_PUBLIC_BASE_RPC_URL=https://base-mainnet.infura.io/v3/c8bf17fa47c0443e8a392a70b0945ce0
+NEXT_PUBLIC_BASE_API_KEY=c8bf17fa47c0443e8a392a70b0945ce0
+```
+
+### Circle (USDC Payments)
+```env
+CIRCLE_API_KEY=<get_from_circle_dashboard>
+CIRCLE_ENTITY_SECRET=<get_from_circle_dashboard>
+CIRCLE_WALLET_ID=<get_from_circle_dashboard>
+```
+
+### Resend (Email Notifications)
+```env
+RESEND_API_KEY=re_3zqaUqp6_92g5TqynaoG22MauPxTumhX5
+FROM_EMAIL=noreply@forlarge.app
+```
+
+### Helius (Solana RPC)
+```env
+NEXT_PUBLIC_HELIUS_API_KEY=b26ce471-d141-40cb-a4d1-eefcca0bfca4
+```
+
+### Platform Configuration
+```env
+NEXT_PUBLIC_APP_URL=https://forlarge.app
+PLATFORM_WALLET_BASE=<your_base_wallet_address>
+PLATFORM_WALLET_SOLANA=<your_solana_wallet_address>
+```
+
+---
+
+## 📋 Pre-Deployment Checklist
+
+### 1. Circle Setup (CRITICAL)
+- [ ] Sign up at https://console.circle.com
+- [ ] Complete KYC verification
+- [ ] Create a wallet
+- [ ] Get API credentials
+- [ ] Test in sandbox mode first
+- [ ] Switch to production
+
+### 2. Domain Setup
+- [ ] Purchase `forlarge.app` domain
+- [ ] Configure DNS records
+- [ ] Set up SSL certificates
+- [ ] Configure CORS for API
+
+### 3. Privy Configuration
+- [ ] Update allowed domains in Privy dashboard
+- [ ] Add `forlarge.app` to allowed origins
+- [ ] Add `dashboard.forlarge.app` if using subdomain
+- [ ] Test wallet connection
+
+### 4. Supabase Configuration
+- [ ] Update allowed domains in Supabase dashboard
+- [ ] Configure email templates
+- [ ] Set up storage buckets
+- [ ] Enable RLS policies
+- [ ] Test database connections
+
+### 5. Email Setup (Resend)
+- [ ] Verify domain in Resend
+- [ ] Add DNS records for email
+- [ ] Create email templates
+- [ ] Test email delivery
+
+---
+
+## 🚀 Deployment Platforms (Recommended)
+
+### Option 1: Vercel (Recommended)
+**Best for:** Next.js apps, fastest deployment
+
+**Pros:**
+- ✅ Zero-config Next.js deployment
+- ✅ Automatic SSL
+- ✅ Edge functions support
+- ✅ Built-in analytics
+- ✅ Preview deployments
+- ✅ Free tier available
+
+**Setup:**
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+
+# Add environment variables via dashboard
+```
+
+**Custom Domain:**
+1. Go to Vercel dashboard
+2. Add `forlarge.app` domain
+3. Update DNS records as instructed
+4. SSL auto-configured
+
+---
+
+### Option 2: Netlify
+**Best for:** Static sites with serverless functions
+
+**Pros:**
+- ✅ Easy deployment
+- ✅ Good free tier
+- ✅ Built-in forms
+- ✅ Split testing
+
+**Setup:**
+```bash
+# Install Netlify CLI
+npm i -g netlify-cli
+
+# Deploy
+netlify deploy --prod
+```
+
+---
+
+### Option 3: Railway
+**Best for:** Full-stack apps with databases
+
+**Pros:**
+- ✅ Simple pricing
+- ✅ Built-in databases
+- ✅ Good for monoliths
+- ✅ Easy scaling
+
+---
+
+## 🏗️ Production Architecture
+
+```
+┌─────────────────────────────────────────┐
+│         forlarge.app (Main App)         │
+│  - Landing page                         │
+│  - Authentication                       │
+│  - Public product pages                 │
+└─────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────┐
+│    forlarge.app/dashboard (Protected)   │
+│  - Creator dashboard                    │
+│  - Product management                   │
+│  - Analytics                            │
+│  - Sales tracking                       │
+└─────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────┐
+│         Supabase (Backend)              │
+│  - PostgreSQL database                  │
+│  - File storage                         │
+│  - Authentication                       │
+│  - Real-time subscriptions              │
+└─────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────┐
+│      Payment Infrastructure             │
+│  - Circle (USDC payments)               │
+│  - Base Network (via Infura)            │
+│  - Privy (Wallet connection)            │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 🔒 Security Checklist
+
+### Environment Variables
+- [ ] Never commit `.env` files
+- [ ] Use platform-specific env var management
+- [ ] Rotate API keys regularly
+- [ ] Use different keys for dev/prod
+
+### API Security
+- [ ] Enable CORS properly
+- [ ] Rate limit API endpoints
+- [ ] Validate all inputs
+- [ ] Use HTTPS only
+- [ ] Implement CSRF protection
+
+### Database Security
+- [ ] Enable RLS on all tables
+- [ ] Use service role key only in server
+- [ ] Validate user permissions
+- [ ] Encrypt sensitive data
+- [ ] Regular backups
+
+### Payment Security
+- [ ] Verify transaction signatures
+- [ ] Validate payment amounts
+- [ ] Check wallet addresses
+- [ ] Log all transactions
+- [ ] Monitor for fraud
+
+---
+
+## 📊 Monitoring & Analytics
+
+### Essential Tools
+1. **Vercel Analytics** (if using Vercel)
+   - Page views
+   - Performance metrics
+   - User behavior
+
+2. **Sentry** (Error Tracking)
+   ```bash
+   npm install @sentry/nextjs
+   ```
+
+3. **PostHog** (Product Analytics)
+   ```bash
+   npm install posthog-js
+   ```
+
+4. **Supabase Dashboard**
+   - Database queries
+   - Storage usage
+   - API calls
+
+---
+
+## 🚦 Launch Checklist
+
+### Week Before Launch
+- [ ] Complete all environment setup
+- [ ] Test payment flow end-to-end
+- [ ] Test email notifications
+- [ ] Test file uploads/downloads
+- [ ] Load test with 100+ concurrent users
+- [ ] Security audit
+- [ ] Backup database
+
+### Launch Day
+- [ ] Deploy to production
+- [ ] Verify all environment variables
+- [ ] Test critical user flows
+- [ ] Monitor error logs
+- [ ] Check payment processing
+- [ ] Verify email delivery
+- [ ] Test on multiple devices
+
+### Post-Launch (First Week)
+- [ ] Monitor error rates
+- [ ] Track user signups
+- [ ] Monitor payment success rate
+- [ ] Collect user feedback
+- [ ] Fix critical bugs
+- [ ] Optimize performance
+
+---
+
+## 🎯 MVP Feature Priority
+
+### Must Have (Week 1)
+1. ✅ User authentication (Privy)
+2. ✅ Product creation with file upload
+3. ✅ Product pages with preview
+4. ✅ USDC payment flow
+5. ✅ Download access system
+6. ✅ Email notifications
+
+### Should Have (Week 2)
+1. Creator dashboard analytics
+2. Sales history
+3. Product search
+4. Share functionality
+5. QR code generation
+
+### Nice to Have (Week 3+)
+1. Social media integration
+2. Advanced analytics
+3. Bulk operations
+4. API for third-party integrations
+5. Mobile app
+
+---
+
+## 💰 Cost Estimation (Monthly)
+
+### Infrastructure
+- **Vercel Pro:** $20/month (recommended for production)
+- **Supabase Pro:** $25/month (includes 8GB database)
+- **Circle:** 0.5-1% per transaction
+- **Resend:** $20/month (50k emails)
+- **Domain:** $12/year
+
+**Total:** ~$70-80/month + transaction fees
+
+### Scaling Costs
+- **100 users:** ~$100/month
+- **1,000 users:** ~$200/month
+- **10,000 users:** ~$500/month
+
+---
+
+## 🔄 CI/CD Pipeline
+
+### GitHub Actions (Recommended)
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test
+      - uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+```
+
+---
+
+## 📞 Support & Maintenance
+
+### Daily Tasks
+- Monitor error logs
+- Check payment processing
+- Review user feedback
+
+### Weekly Tasks
+- Database backups
+- Performance optimization
+- Security updates
+- Feature releases
+
+### Monthly Tasks
+- Cost analysis
+- User analytics review
+- Infrastructure scaling
+- Security audit
+
+---
+
+## 🎉 Ready for Production?
+
+### Final Verification
+```bash
+# Test build locally
+npm run build
+npm run start
+
+# Check environment variables
+npm run env:check
+
+# Run tests
+npm run test
+
+# Security audit
+npm audit
+
+# Deploy
+vercel --prod
+```
+
+---
+
+**Last Updated:** January 12, 2025
+**Status:** Ready for deployment after Circle setup
