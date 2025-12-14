@@ -4,8 +4,11 @@ import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ArrowLeft, ShoppingCart, Eye, Download } from "lucide-react"
+import { Navbar } from "@/components/Navbar"
+import { AudioPreviewPlayer } from "@/components/AudioPreviewPlayer"
+import { SimilarProducts } from "@/components/SimilarProducts"
+import { CreatorProducts } from "@/components/CreatorProducts"
+import { ArrowLeft, ShoppingCart, Eye, Download, User } from "lucide-react"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const supabase = await createClient()
@@ -37,30 +40,15 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b border-border">
-        <div className="container mx-auto px-8 py-6 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-light tracking-tight">
-            forlarge
-          </Link>
-          <div className="flex items-center gap-6">
-            <ThemeToggle />
-            <Link href="/explore">
-              <Button variant="ghost" className="font-light">Explore</Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="ghost" className="font-light">Log In</Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
-      <div className="container mx-auto px-8 py-12">
+      <div className="container mx-auto px-4 sm:px-8 py-12 md:py-16 mt-16 md:mt-0">
         <Link href="/explore" className="inline-flex items-center gap-2 text-sm font-light text-muted-foreground hover:text-sky-500 transition-colors mb-8">
           <ArrowLeft className="w-4 h-4" />
           Back to Explore
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
           <div className="space-y-6">
             {product.cover_image_url ? (
               <img
@@ -74,15 +62,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
               </div>
             )}
 
-            {product.preview_url && (
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-light mb-4">Audio Preview</h3>
-                  <audio controls className="w-full">
-                    <source src={product.preview_url} />
-                  </audio>
-                </CardContent>
-              </Card>
+            {product.preview_file_url && (
+              <AudioPreviewPlayer 
+                audioUrl={product.preview_file_url} 
+                title={product.title}
+              />
             )}
           </div>
 
@@ -114,10 +98,12 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
             <div className="space-y-4">
               <div className="text-5xl font-light text-sky-500">${product.price}</div>
-              <Button size="lg" className="w-full bg-sky-500 hover:bg-sky-600 text-white font-light h-14">
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Purchase Now
-              </Button>
+              <Link href={`/checkout/${product.id}`}>
+                <Button size="lg" className="w-full bg-sky-500 hover:bg-sky-600 text-white font-light h-14">
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Purchase Now
+                </Button>
+              </Link>
               <p className="text-sm text-muted-foreground font-light text-center">
                 Instant download after purchase
               </p>
@@ -136,33 +122,48 @@ export default async function ProductPage({ params }: { params: { id: string } }
               <Card className="border-sky-500/20">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    {product.profiles.avatar_url && (
-                      <img
-                        src={product.profiles.avatar_url}
-                        alt={product.profiles.full_name || "Creator"}
-                        className="w-16 h-16 rounded-full"
-                      />
-                    )}
+                    <div className="w-16 h-16 rounded-full bg-sky-500 flex items-center justify-center text-white text-xl font-light flex-shrink-0">
+                      <User className="h-8 w-8" />
+                    </div>
                     <div className="flex-1 space-y-2">
                       <h3 className="text-xl font-light">
-                        {product.profiles.full_name || product.profiles.username}
+                        {product.profiles.full_name || product.profiles.username || 'Creator'}
                       </h3>
                       {product.profiles.bio && (
                         <p className="text-sm text-muted-foreground font-light">
                           {product.profiles.bio}
                         </p>
                       )}
-                      <Link href={`/creators/${product.profiles.id}`}>
-                        <Button variant="outline" size="sm" className="font-light">
-                          View Profile
-                        </Button>
-                      </Link>
+                      {product.profiles.username && (
+                        <Link href={`/store/${product.profiles.username}`}>
+                          <Button variant="outline" size="sm" className="font-light">
+                            View Store
+                          </Button>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </CardContent>
               </Card>
             )}
           </div>
+        </div>
+
+        {/* Similar Products Section */}
+        <div className="max-w-6xl mx-auto mt-16 pt-16 border-t border-border">
+          <SimilarProducts 
+            currentProductId={product.id}
+            category={product.category}
+            tags={product.tags || []}
+          />
+        </div>
+
+        {/* More from Creator Section */}
+        <div className="max-w-6xl mx-auto mt-16">
+          <CreatorProducts 
+            creatorId={product.user_id}
+            currentProductId={product.id}
+          />
         </div>
       </div>
     </div>

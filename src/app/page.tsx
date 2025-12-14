@@ -2,35 +2,15 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Zap, Globe, Shield, TrendingUp, Upload, DollarSign, Check, Star } from "lucide-react";
 import Waves from "@/components/ui/waves";
-import { useEffect, useState } from "react";
+import { Navbar } from "@/components/Navbar";
+
 
 export default function Page() {
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsNavVisible(false);
-      } else {
-        setIsNavVisible(true);
-      }
-      
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
       {/* Waves Background Effect - Full Screen */}
       <div className="fixed inset-0 z-0">
         <Waves
@@ -46,42 +26,11 @@ export default function Page() {
         />
       </div>
 
-      {/* Navigation - Floating Capsule */}
-      <nav className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${
-        isNavVisible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'
-      }`}>
-        <div className="flex items-center gap-6 px-4 py-1.5 rounded-full bg-background/80 backdrop-blur-lg border border-border shadow-lg">
-          <Link href="/" className="text-base font-light tracking-tight hover:text-sky-500 transition-colors">
-            forlarge
-          </Link>
-          
-          <div className="h-4 w-px bg-border" />
-          
-          <div className="hidden md:flex items-center gap-1 text-xs font-light">
-            <Link href="#features" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">Features</Link>
-            <Link href="#how-it-works" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">How It Works</Link>
-            <Link href="#testimonials" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">Testimonials</Link>
-            <Link href="/explore" className="hover:text-sky-500 transition-colors px-2.5 py-1 rounded-full hover:bg-sky-500/10">Explore</Link>
-          </div>
-          
-          <div className="h-4 w-px bg-border" />
-          
-          <div className="flex items-center gap-1.5">
-            <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-xs font-light rounded-full h-7 px-3">Log In</Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm" className="bg-sky-500 hover:bg-sky-600 text-white font-light rounded-full h-7 px-3 text-xs">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      {/* Navigation */}
+      <Navbar />
 
       {/* Hero Section */}
-      <section className="relative z-10 container mx-auto px-8 md:px-16 pt-32 pb-40">
+      <section className="relative z-10 container mx-auto px-4 sm:px-4 sm:px-8 md:px-16 pt-32 pb-40">
         <div className="max-w-5xl mx-auto text-center space-y-12">
           <div className="inline-block bg-sky-500/10 text-sky-500 px-6 py-2 rounded-full text-sm font-light border border-sky-500/20">
             Web3 Creator Commerce Platform
@@ -126,7 +75,7 @@ export default function Page() {
 
       {/* Stats Section */}
       <section className="relative z-10 border-y border-border bg-muted/20">
-        <div className="container mx-auto px-8 md:px-16 py-20">
+        <div className="container mx-auto px-4 sm:px-8 md:px-16 py-20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             <div className="space-y-2">
               <div className="text-5xl font-light text-sky-500">10k+</div>
@@ -149,7 +98,7 @@ export default function Page() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative z-10 container mx-auto px-8 md:px-16 py-32">
+      <section id="features" className="relative z-10 container mx-auto px-4 sm:px-8 md:px-16 py-32">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-24 space-y-6">
             <h2 className="text-5xl md:text-6xl font-light tracking-tight">
@@ -226,7 +175,7 @@ export default function Page() {
 
       {/* How It Works Section */}
       <section id="how-it-works" className="relative z-10 bg-muted/20 py-32">
-        <div className="container mx-auto px-8 md:px-16">
+        <div className="container mx-auto px-4 sm:px-8 md:px-16">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-24 space-y-6">
               <h2 className="text-5xl md:text-6xl font-light tracking-tight">
@@ -273,7 +222,7 @@ export default function Page() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="relative z-10 container mx-auto px-8 md:px-16 py-32">
+      <section id="testimonials" className="relative z-10 container mx-auto px-4 sm:px-8 md:px-16 py-32">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-24 space-y-6">
             <h2 className="text-5xl md:text-6xl font-light tracking-tight">
@@ -344,7 +293,7 @@ export default function Page() {
 
       {/* CTA Section */}
       <section className="relative z-10 bg-gradient-to-br from-sky-500/10 via-background to-background py-32">
-        <div className="container mx-auto px-8 md:px-16">
+        <div className="container mx-auto px-4 sm:px-8 md:px-16">
           <div className="max-w-4xl mx-auto text-center space-y-12">
             <h2 className="text-5xl md:text-6xl font-light tracking-tight">
               Ready to take control of your revenue?
@@ -374,7 +323,7 @@ export default function Page() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-border bg-muted/20">
-        <div className="container mx-auto px-8 md:px-16 py-16">
+        <div className="container mx-auto px-4 sm:px-8 md:px-16 py-16">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="space-y-4">
               <div className="text-2xl font-light">forlarge</div>

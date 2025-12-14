@@ -168,7 +168,33 @@ export default function SettingsPage() {
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     placeholder="johndoe"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Your unique store URL: forlarge.app/store/{formData.username || 'username'}
+                  </p>
                 </div>
+
+                {formData.username && (
+                  <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-4">
+                    <Label className="text-sm font-medium mb-2 block">Your Store Link</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={`${typeof window !== 'undefined' ? window.location.origin : 'https://forlarge.app'}/store/${formData.username}`}
+                        readOnly
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${typeof window !== 'undefined' ? window.location.origin : 'https://forlarge.app'}/store/${formData.username}`);
+                          alert('Store link copied to clipboard!');
+                        }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="full_name">Full Name</Label>

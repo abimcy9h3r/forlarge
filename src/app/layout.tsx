@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "Forlarge - The Future of Creator Commerce",
   description: "Keep 95% of your revenue. Get paid instantly. Sell globally.",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
 };
 
 export default function RootLayout({

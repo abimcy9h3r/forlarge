@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { Navbar } from "@/components/Navbar"
 import { Search } from "lucide-react"
 
 export default async function ExplorePage() {
@@ -25,26 +25,9 @@ export default async function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b border-border">
-        <div className="container mx-auto px-8 py-6 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-light tracking-tight">
-            forlarge
-          </Link>
-          <div className="flex items-center gap-6">
-            <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" className="font-light">Log In</Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-sky-500 hover:bg-sky-600 text-white font-light">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      <div className="container mx-auto px-8 py-12 space-y-12">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 sm:px-8 py-12 md:py-16 space-y-12 mt-16 md:mt-0">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <h1 className="text-5xl md:text-6xl font-light tracking-tight">
             Explore Digital Products

@@ -16,19 +16,100 @@ import {
   Settings,
   HelpCircle,
   Upload,
+  Menu,
+  X,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const DashboardSidebar = () => {
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
 
   return (
-    <nav
-      className={`sticky top-0 h-screen shrink-0 border-r transition-all duration-300 ease-in-out ${
-        open ? 'w-64' : 'w-16'
-      } border-border bg-background p-2 shadow-sm`}
-    >
-      <TitleSection open={open} />
+    <>
+      {/* Mobile Sidebar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b border-border p-4">
+        <div className="flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
+              <span className="text-white text-sm font-bold">F</span>
+            </div>
+            <span className="font-light text-lg">forlarge</span>
+          </Link>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0">
+              <div className="p-4">
+                <TitleSection open={true} />
+                <div className="space-y-1 mt-8">
+                  <Option
+                    Icon={Home}
+                    title="Dashboard"
+                    href="/dashboard"
+                    pathname={pathname}
+                    open={true}
+                  />
+                  <Option
+                    Icon={ShoppingCart}
+                    title="Products"
+                    href="/dashboard/products"
+                    pathname={pathname}
+                    open={true}
+                  />
+                  <Option
+                    Icon={Upload}
+                    title="New Product"
+                    href="/dashboard/products/new"
+                    pathname={pathname}
+                    open={true}
+                  />
+                  <Option
+                    Icon={BarChart3}
+                    title="Analytics"
+                    href="/dashboard/analytics"
+                    pathname={pathname}
+                    open={true}
+                  />
+                  <Option
+                    Icon={DollarSign}
+                    title="Sales"
+                    href="/dashboard/sales"
+                    pathname={pathname}
+                    open={true}
+                  />
+                  <Option
+                    Icon={Settings}
+                    title="Settings"
+                    href="/dashboard/settings"
+                    pathname={pathname}
+                    open={true}
+                  />
+                  <Option
+                    Icon={HelpCircle}
+                    title="Help"
+                    href="/dashboard/help"
+                    pathname={pathname}
+                    open={true}
+                  />
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <nav
+        className={`hidden lg:block sticky top-0 h-screen shrink-0 border-r transition-all duration-300 ease-in-out ${
+          open ? 'w-64' : 'w-16'
+        } border-border bg-background p-2 shadow-sm`}
+      >
+        <TitleSection open={open} />
 
       <div className="space-y-1 mb-8">
         <Option
@@ -95,12 +176,7 @@ export const DashboardSidebar = () => {
             open={open}
           />
         </div>
-      )}
-
-      <ToggleClose open={open} setOpen={setOpen} />
-    </nav>
-  );
-};
+      )}\n\n      <ToggleClose open={open} setOpen={setOpen} />\n      </nav>\n    </>\n  );\n};
 
 const Option = ({ Icon, title, href, pathname, open }: any) => {
   const isSelected = pathname === href;
