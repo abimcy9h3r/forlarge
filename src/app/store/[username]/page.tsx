@@ -7,11 +7,11 @@ import { Navbar } from '@/components/Navbar';
 import { MapPin, Calendar, Package } from 'lucide-react';
 
 export default async function CreatorStorePage({ params }: { params: { username: string } }) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
-  // Get creator info
+  // Get creator info from users table (not auth.users)
   const { data: creator, error: creatorError } = await supabase
-    .from('auth.users')
+    .from('users')
     .select('id, username, email, created_at')
     .eq('username', params.username)
     .single();
