@@ -8,28 +8,6 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
-
-# Handle Next.js dynamic routes
-[[redirects]]
-  from = "/products/:id"
-  to = "/products/:id"
-  status = 200
-
-[[redirects]]
-  from = "/store/:username"
-  to = "/store/:username"
-  status = 200
-
-[[redirects]]
-  from = "/download/:token"
-  to = "/download/:token"
-  status = 200
-
 [[headers]]
   for = "/*"
   [headers.values]
@@ -37,3 +15,4 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+

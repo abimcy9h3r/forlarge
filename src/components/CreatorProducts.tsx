@@ -9,7 +9,7 @@ interface CreatorProductsProps {
 }
 
 export async function CreatorProducts({ creatorId, currentProductId }: CreatorProductsProps) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Get other products from the same creator
   const { data: products } = await supabase

@@ -1,6 +1,14 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend lazily to avoid build-time errors
+let resend: Resend | null = null;
+
+function getResendClient(): Resend | null {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 interface PurchaseConfirmationEmailProps {
   buyerEmail: string;
@@ -17,8 +25,14 @@ export async function sendPurchaseConfirmationEmail({
 }: PurchaseConfirmationEmailProps) {
   const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://forlarge.app'}/download/${downloadToken}`;
 
+  const client = getResendClient();
+  if (!client) {
+    console.warn('Resend API key not configured, skipping email');
+    return { success: false, error: 'Email service not configured' };
+  }
+
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await client.emails.send({
       from: 'Forlarge <noreply@forlarge.app>',
       to: [buyerEmail],
       subject: `Your purchase of ${productTitle} is ready!`,
@@ -100,8 +114,14 @@ export async function sendNewSaleNotification({
   const platformFee = amount * 0.05;
   const creatorAmount = amount * 0.95;
 
+  const client = getResendClient();
+  if (!client) {
+    console.warn('Resend API key not configured, skipping email');
+    return { success: false, error: 'Email service not configured' };
+  }
+
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await client.emails.send({
       from: 'Forlarge <noreply@forlarge.app>',
       to: [creatorEmail],
       subject: `🎉 New sale: ${productTitle}`,

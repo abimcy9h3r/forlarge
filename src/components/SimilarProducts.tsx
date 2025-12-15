@@ -10,7 +10,7 @@ interface SimilarProductsProps {
 }
 
 export async function SimilarProducts({ currentProductId, category, tags }: SimilarProductsProps) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Find similar products by category and tags
   const { data: products } = await supabase
