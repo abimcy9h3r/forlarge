@@ -24,7 +24,7 @@ export default function SignupPage() {
     setLoading(true)
     setError("")
 
-    const { error } = await supabase.auth.signUp({
+    const { error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -34,8 +34,8 @@ export default function SignupPage() {
       },
     })
 
-    if (error) {
-      setError(error.message)
+    if (authError) {
+      setError(authError.message)
       setLoading(false)
     } else {
       // Redirect to onboarding after successful signup
