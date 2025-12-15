@@ -36,7 +36,7 @@ export default function Page() {
             Web3 Creator Commerce Platform
           </div>
           
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-light leading-[1.1] tracking-tight">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.1] tracking-tight">
             Keep <span className="text-sky-500">95%</span> of your revenue.
             <br />
             Sell globally, get paid instantly.

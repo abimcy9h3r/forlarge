@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPayment } from '@/lib/services/circle';
+import { createUSDCPayment } from '@/lib/services/circle';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,12 +15,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Create payment with Circle
-    const payment = await createPayment({
+    const payment = await createUSDCPayment({
       amount,
       currency,
-      chain,
       recipientAddress,
-      metadata
+      productId: metadata?.productId || '',
+      buyerEmail: metadata?.buyerEmail
     });
 
     return NextResponse.json({ success: true, payment });

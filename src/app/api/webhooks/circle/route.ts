@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const { type, data } = body;
 
     if (type === 'payment.confirmed') {
-      const supabase = createClient();
+      const supabase = await createClient();
       
       const {
         id: paymentId,
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       // Get transaction from database
       const { data: transaction, error: txError } = await supabase
         .from('transactions')
-        .select('*, products(*)')
+        .select('*')
         .eq('tx_hash', transactionHash)
         .single();
 

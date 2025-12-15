@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-export const DashboardSidebar = () => {
+export function DashboardSidebar() {
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
 
@@ -176,9 +176,16 @@ export const DashboardSidebar = () => {
             open={open}
           />
         </div>
-      )}\n\n      <ToggleClose open={open} setOpen={setOpen} />\n      </nav>\n    </>\n  );\n};
+      )}
 
-const Option = ({ Icon, title, href, pathname, open }: any) => {
+      <ToggleClose open={open} setOpen={setOpen} />
+      </nav>
+    </>
+  );
+}
+
+
+function Option({ Icon, title, href, pathname, open }: any) {
   const isSelected = pathname === href;
   
   return (
@@ -205,9 +212,9 @@ const Option = ({ Icon, title, href, pathname, open }: any) => {
       )}
     </Link>
   );
-};
+}
 
-const TitleSection = ({ open }: any) => {
+function TitleSection({ open }: any) {
   return (
     <div className="mb-6 border-b border-border pb-4">
       <div className="flex cursor-pointer items-center justify-between rounded-md p-2 transition-colors hover:bg-accent">
@@ -234,9 +241,9 @@ const TitleSection = ({ open }: any) => {
       </div>
     </div>
   );
-};
+}
 
-const Logo = () => {
+function Logo() {
   return (
     <div className="grid size-10 shrink-0 place-content-center rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 shadow-sm">
       <svg
@@ -256,9 +263,9 @@ const Logo = () => {
       </svg>
     </div>
   );
-};
+}
 
-const ToggleClose = ({ open, setOpen }: any) => {
+function ToggleClose({ open, setOpen }: any) {
   return (
     <button
       onClick={() => setOpen(!open)}
@@ -284,4 +291,4 @@ const ToggleClose = ({ open, setOpen }: any) => {
       </div>
     </button>
   );
-};
+}

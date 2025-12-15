@@ -67,7 +67,7 @@ export async function getTransactionByHash(txHash: string) {
 
   const { data, error } = await supabase
     .from('transactions')
-    .select('*')
+    .select(`*`)
     .eq('tx_hash', txHash)
     .single();
 

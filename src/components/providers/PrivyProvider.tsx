@@ -8,7 +8,10 @@ export function PrivyProvider({ children }: { children: React.ReactNode }) {
   
   // Disable Privy if not configured or in canvas environment
   if (!appId || appId === '' || appId === 'undefined' || 
-      (typeof window !== 'undefined' && window.location.hostname.includes('canvases.tempo.build'))) {
+      (typeof window !== 'undefined' && (
+        window.location.hostname.includes('canvases.tempo.build') ||
+        window.location.hostname.includes('tempo.build')
+      ))) {
     return <>{children}</>;
   }
 
