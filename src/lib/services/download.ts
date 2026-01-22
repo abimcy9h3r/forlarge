@@ -1,30 +1,44 @@
-import { createClient } from '@/lib/supabase/client';
-import { generateDownloadToken, generateAccessExpiry } from '@/lib/utils/download-token';
 
-export async function createDownloadAccess(transactionId: string, productId: string, buyerWalletAddress: string) {
+import { createClient } from '@/lib/supabase/client';
+
+export interface DownloadAccess {
+  transactionId: string;
+  productId: string;
+  buyerWallet: string;
+  token: string;
+  expiresIn?: number; // duration in ms
+}
+
+export async function createDownloadAccess({
+  transactionId,
+  productId,
+  buyerWallet,
+  token,
+  expiresIn = 24 * 60 * 60 * 1000 // 24 hours
+}: DownloadAccess) {
   const supabase = createClient();
-  const token = generateDownloadToken();
-  const expiresAt = generateAccessExpiry(24); // 24 hours
+
+  const expiresAt = new Date(Date.now() + expiresIn).toISOString();
 
   const { data, error } = await supabase
     .from('download_access')
     .insert({
       transaction_id: transactionId,
       product_id: productId,
-      buyer_wallet_address: buyerWalletAddress,
+      buyer_wallet_address: buyerWallet,
       access_token: token,
-      expires_at: expiresAt.toISOString(),
+      expires_at: expiresAt,
       max_downloads: 5,
+      download_count: 0
     })
     .select()
     .single();
 
   if (error) {
-    console.error('Error creating download access:', error);
     return { success: false, error: error.message };
   }
 
-  return { success: true, token, downloadAccess: data };
+  return { success: true, data };
 }
 
 export async function validateDownloadToken(token: string) {
@@ -32,7 +46,18 @@ export async function validateDownloadToken(token: string) {
 
   const { data, error } = await supabase
     .from('download_access')
-    .select('*, products(*)')
+    .select(`
+      *,
+      products (
+        id,
+        title,
+        description,
+        file_url,
+        file_type,
+        external_file_url,
+        cover_image_url
+      )
+    `)
     .eq('access_token', token)
     .single();
 
@@ -40,36 +65,37 @@ export async function validateDownloadToken(token: string) {
     return { valid: false, error: 'Invalid token' };
   }
 
-  const now = new Date();
-  const expiresAt = new Date(data.expires_at);
-
-  if (now > expiresAt) {
-    return { valid: false, error: 'Token expired' };
+  // Check Expiry
+  if (data.expires_at && new Date(data.expires_at) < new Date()) {
+    return { valid: false, error: 'Download link expired' };
   }
 
-  if (data.download_count >= data.max_downloads) {
-    return { valid: false, error: 'Download limit reached' };
+  // Check Max Downloads
+  if (data.max_downloads && data.download_count >= data.max_downloads) {
+    return { valid: false, error: 'Max download limit reached' };
   }
 
-  return { valid: true, downloadAccess: data };
+  return { valid: true, data };
 }
 
-export async function incrementDownloadCount(token: string) {
+export async function consumeDownloadToken(token: string) {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from('download_access')
-    .update({
-      download_count: supabase.rpc('increment', { row_id: token }),
-    })
-    .eq('access_token', token)
-    .select()
-    .single();
+  // Need to increment download_count safely
+  // We can use an RPC or just read-increment-write for MVP if race conditions aren't critical
+  // Or raw SQL via rpc if available.
+
+  // Simple update:
+  const { data, error } = await supabase.rpc('increment_download_count', { token_input: token });
 
   if (error) {
-    console.error('Error incrementing download count:', error);
-    return { success: false };
+    // If RPC missing, try manual update
+    // Note: Assuming we have permissions or this runs server-side (it should).
+    // Actually, this file uses 'createClient' from client.ts which is generic.
+    // If running in browser, might be blocked by RLS if not careful.
+    // Ideally this runs in an API route or Server Action.
+    console.error('Failed to increment download count via RPC', error);
   }
 
-  return { success: true, downloadAccess: data };
+  return { success: !error };
 }

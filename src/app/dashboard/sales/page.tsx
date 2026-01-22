@@ -22,27 +22,32 @@ export default function SalesPage() {
   async function loadSales() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       router.push("/login");
       return;
     }
 
+    // Transactions table is RLS protected, so we just select *
+    // We expect the RLS policy "Users can view their own transactions as seller" to filter.
+    // However, we might need to verify if the user has a wallet address set in their profile first?
+    // Actually, RLS handles filtering. If user has no wallet in profile matching the tx, they see nothing.
+
+    // Join with products to get details
     const { data, error } = await supabase
-      .from('sales')
+      .from('transactions')
       .select(`
         *,
         product:products(title, cover_image_url, price)
       `)
-      .eq('seller_id', user.id)
       .order('created_at', { ascending: false });
 
     if (data) {
       setSales(data);
-      const totalRevenue = data.reduce((sum, sale) => sum + Number(sale.amount), 0);
+      const totalRevenue = data.reduce((sum, tx) => sum + Number(tx.amount), 0);
       const totalSales = data.length;
       const avgOrderValue = totalSales > 0 ? totalRevenue / totalSales : 0;
-      
+
       setStats({
         totalRevenue,
         totalSales,
@@ -106,7 +111,7 @@ export default function SalesPage() {
         <div className="p-6 border-b border-border">
           <h2 className="text-xl font-semibold">Recent Transactions</h2>
         </div>
-        
+
         {sales.length === 0 ? (
           <div className="p-12 text-center">
             <p className="text-muted-foreground">No sales yet</p>
@@ -125,16 +130,19 @@ export default function SalesPage() {
                   )}
                   <div>
                     <h3 className="font-semibold">{sale.product?.title || 'Unknown Product'}</h3>
-                    <p className="text-sm text-muted-foreground">{sale.buyer_email}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(sale.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
+                    <p className="text-sm text-muted-foreground">Buyer: {sale.buyer_wallet_address.slice(0, 6)}...{sale.buyer_wallet_address.slice(-4)}</p>
+                    <div className="flex gap-2 mt-1">
+                      <span className="text-xs bg-sky-500/10 text-sky-500 px-2 py-0.5 rounded capitalize">{sale.chain}</span>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(sale.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">

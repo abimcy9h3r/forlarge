@@ -23,7 +23,7 @@ export default function AnalyticsPage() {
   async function loadAnalytics() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       router.push("/login");
       return;
@@ -34,19 +34,33 @@ export default function AnalyticsPage() {
       .select('*')
       .eq('user_id', user.id);
 
-    const { data: sales } = await supabase
-      .from('sales')
-      .select('amount')
-      .eq('seller_id', user.id);
+    // Fetch transactions (filtered by RLS to this seller)
+    // We assume the user has configured their wallet in profile to see these transactions
+    const { data: transactions } = await supabase
+      .from('transactions')
+      .select('amount, product_id, status')
+      .neq('status', 'failed'); // Exclude failed transactions
 
-    if (products && sales) {
+    if (products && transactions) {
       const totalViews = products.reduce((sum, p) => sum + (p.views_count || 0), 0);
-      const totalSales = sales.length;
-      const totalRevenue = sales.reduce((sum, s) => sum + Number(s.amount), 0);
+      const totalSales = transactions.length;
+      const totalRevenue = transactions.reduce((sum, tx) => sum + Number(tx.amount), 0);
       const conversionRate = totalViews > 0 ? (totalSales / totalViews) * 100 : 0;
-      
+
+      // Calculate sales count per product from transactions
+      // Because product.sales_count might be legacy or needs manual update
+      // Let's compute it fresh from transactions for accuracy
+      const salesByProduct: Record<string, number> = {};
+      transactions.forEach(tx => {
+        salesByProduct[tx.product_id] = (salesByProduct[tx.product_id] || 0) + 1;
+      });
+
       const topProducts = products
-        .sort((a, b) => (b.sales_count || 0) - (a.sales_count || 0))
+        .map(p => ({
+          ...p,
+          sales_count: salesByProduct[p.id] || 0
+        }))
+        .sort((a, b) => b.sales_count - a.sales_count)
         .slice(0, 5);
 
       setAnalytics({
@@ -159,8 +173,8 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">{analytics.conversionRate.toFixed(2)}%</span>
               </div>
               <div className="w-full bg-accent rounded-full h-2">
-                <div 
-                  className="bg-sky-500 h-2 rounded-full transition-all" 
+                <div
+                  className="bg-sky-500 h-2 rounded-full transition-all"
                   style={{ width: `${Math.min(analytics.conversionRate, 100)}%` }}
                 ></div>
               </div>
@@ -170,7 +184,7 @@ export default function AnalyticsPage() {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-muted-foreground">Average Views per Product</span>
                 <span className="text-sm font-medium">
-                  {analytics.topProducts.length > 0 
+                  {analytics.topProducts.length > 0
                     ? Math.round(analytics.totalViews / analytics.topProducts.length)
                     : 0}
                 </span>
@@ -184,7 +198,7 @@ export default function AnalyticsPage() {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-muted-foreground">Sales Success Rate</span>
                 <span className="text-sm font-medium">
-                  {analytics.topProducts.length > 0 
+                  {analytics.topProducts.length > 0
                     ? ((analytics.totalSales / analytics.topProducts.length) * 10).toFixed(1)
                     : 0}%
                 </span>
