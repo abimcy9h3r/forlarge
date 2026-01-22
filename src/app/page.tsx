@@ -35,27 +35,29 @@ export default function Page() {
           <div className="inline-block bg-sky-500/10 text-sky-500 px-6 py-2 rounded-full text-sm font-light border border-sky-500/20">
             Web3 Creator Commerce Platform
           </div>
-          
+
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.1] tracking-tight">
             Keep <span className="text-sky-500">95%</span> of your revenue.
             <br />
             Sell globally, get paid instantly.
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto leading-relaxed">
             The Web3 commerce platform built for digital creators. Upload your beats, samples, and products. Start earning in minutes.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <Button size="lg" className="bg-sky-500 hover:bg-sky-600 text-white font-light text-base px-10 h-14">
-              Start Selling Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/request-access">
+              <Button size="lg" className="bg-sky-500 hover:bg-sky-600 text-white font-light text-base px-10 h-14">
+                Request Access
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="font-light text-base px-10 h-14 border-sky-500/20 hover:bg-sky-500/10">
               Explore Products
             </Button>
           </div>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-8 pt-12 text-sm text-muted-foreground font-light">
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-sky-500" />
@@ -108,7 +110,7 @@ export default function Page() {
               Powerful tools designed for modern creators. No technical knowledge required.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-16">
             <div className="space-y-6">
               <div className="w-12 h-12 rounded-full bg-sky-500/10 flex items-center justify-center">
@@ -185,7 +187,7 @@ export default function Page() {
                 Start selling in minutes. No complicated setup required.
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-3 gap-20">
               <div className="text-center space-y-6">
                 <div className="w-16 h-16 rounded-full bg-sky-500 text-white flex items-center justify-center text-3xl font-light mx-auto">
@@ -232,7 +234,7 @@ export default function Page() {
               Join thousands of creators who are already earning more with Forlarge.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-12">
             <div className="border border-border rounded-2xl p-8 space-y-6 hover:border-sky-500/50 transition-colors">
               <div className="flex gap-1">
@@ -301,19 +303,16 @@ export default function Page() {
             <p className="text-xl text-muted-foreground font-light max-w-2xl mx-auto">
               Join thousands of creators who are already earning more with Forlarge. Start selling today, completely free.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
-              <Input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="h-14 font-light border-sky-500/20 focus:border-sky-500"
-              />
-              <Button size="lg" className="bg-sky-500 hover:bg-sky-600 text-white font-light h-14 px-8 whitespace-nowrap">
-                Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <Link href="/request-access">
+                <Button size="lg" className="bg-sky-500 hover:bg-sky-600 text-white font-light h-14 px-8 whitespace-nowrap">
+                  Request Beta Access
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
-            
+
             <p className="text-sm text-muted-foreground font-light">
               No credit card required. Start selling in minutes.
             </p>
@@ -331,7 +330,7 @@ export default function Page() {
                 The Web3 commerce platform built for digital creators.
               </p>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="font-light">Product</h4>
               <div className="space-y-3 text-sm font-light text-muted-foreground">
@@ -341,7 +340,7 @@ export default function Page() {
                 <div><Link href="/explore" className="hover:text-sky-500 transition-colors">Explore</Link></div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="font-light">Company</h4>
               <div className="space-y-3 text-sm font-light text-muted-foreground">
@@ -351,7 +350,7 @@ export default function Page() {
                 <div><Link href="/contact" className="hover:text-sky-500 transition-colors">Contact</Link></div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h4 className="font-light">Legal</h4>
               <div className="space-y-3 text-sm font-light text-muted-foreground">
@@ -361,9 +360,9 @@ export default function Page() {
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground font-light">
-            <div>© 2024 Forlarge. All rights reserved.</div>
+            <div>© 2026 Forlarge. All rights reserved.</div>
             <div className="flex gap-6">
               <Link href="#" className="hover:text-sky-500 transition-colors">Twitter</Link>
               <Link href="#" className="hover:text-sky-500 transition-colors">Discord</Link>

@@ -13,7 +13,7 @@ export interface PaymentDetails {
 export async function recordPayment(details: PaymentDetails) {
   const supabase = createClient();
 
-  const platformFee = (details.productPrice * PLATFORM_FEE_PERCENTAGE) / 100;
+  const platformFee = details.productPrice * PLATFORM_FEE_PERCENTAGE;
   const creatorAmount = details.productPrice - platformFee;
 
   const { data, error } = await supabase

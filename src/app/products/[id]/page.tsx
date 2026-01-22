@@ -8,6 +8,7 @@ import { Navbar } from "@/components/Navbar"
 import { AudioPreviewPlayer } from "@/components/AudioPreviewPlayer"
 import { SimilarProducts } from "@/components/SimilarProducts"
 import { CreatorProducts } from "@/components/CreatorProducts"
+import { PaymentButton } from "@/components/PaymentButton"
 import { ArrowLeft, ShoppingCart, Eye, Download, User } from "lucide-react"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
@@ -22,7 +23,9 @@ export default async function ProductPage({ params }: { params: { id: string } }
         full_name,
         username,
         avatar_url,
-        bio
+        bio,
+        email,
+        wallet_address
       )
     `)
     .eq("id", params.id)
@@ -63,8 +66,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
             )}
 
             {product.preview_file_url && (
-              <AudioPreviewPlayer 
-                audioUrl={product.preview_file_url} 
+              <AudioPreviewPlayer
+                audioUrl={product.preview_file_url}
                 title={product.title}
               />
             )}
@@ -73,7 +76,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-5xl font-light tracking-tight">{product.title}</h1>
-              
+
               {product.tags && product.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {product.tags.map((tag: string) => (
@@ -98,12 +101,16 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
             <div className="space-y-4">
               <div className="text-5xl font-light text-sky-500">${product.price}</div>
-              <Link href={`/checkout/${product.id}`}>
-                <Button size="lg" className="w-full bg-sky-500 hover:bg-sky-600 text-white font-light h-14">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Purchase Now
-                </Button>
-              </Link>
+
+              <PaymentButton
+                productId={product.id}
+                productTitle={product.title}
+                price={product.price}
+                sellerWalletBase={product.profiles?.wallet_address || ''}
+                sellerWalletSolana={product.profiles?.wallet_address || ''}
+                creatorEmail={product.profiles?.email || ''}
+              />
+
               <p className="text-sm text-muted-foreground font-light text-center">
                 Instant download after purchase
               </p>
@@ -151,7 +158,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
         {/* Similar Products Section */}
         <div className="max-w-6xl mx-auto mt-16 pt-16 border-t border-border">
-          <SimilarProducts 
+          <SimilarProducts
             currentProductId={product.id}
             category={product.category}
             tags={product.tags || []}
@@ -160,7 +167,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
         {/* More from Creator Section */}
         <div className="max-w-6xl mx-auto mt-16">
-          <CreatorProducts 
+          <CreatorProducts
             creatorId={product.user_id}
             currentProductId={product.id}
           />
