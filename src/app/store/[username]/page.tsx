@@ -9,10 +9,10 @@ import { MapPin, Calendar, Package } from 'lucide-react';
 export default async function CreatorStorePage({ params }: { params: { username: string } }) {
   const supabase = await createClient();
 
-  // Get creator info from users table (not auth.users)
+  // Get creator info from profiles table
   const { data: creator, error: creatorError } = await supabase
-    .from('users')
-    .select('id, username, email, created_at')
+    .from('profiles')
+    .select('id, username, full_name, avatar_url, bio, created_at')
     .eq('username', params.username)
     .single();
 
@@ -34,7 +34,7 @@ export default async function CreatorStorePage({ params }: { params: { username:
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 sm:px-8 py-12 md:py-16 mt-16 md:mt-0">
         {/* Creator Header */}
         <div className="max-w-4xl mx-auto mb-12">
@@ -45,7 +45,7 @@ export default async function CreatorStorePage({ params }: { params: { username:
               </div>
               <div className="flex-1">
                 <h1 className="text-4xl md:text-5xl font-light mb-2">@{params.username}</h1>
-                <p className="text-muted-foreground mb-4">Digital Creator on Forlarge</p>
+                <p className="text-muted-foreground mb-4">{creator.bio || "Digital Creator on Forlarge"}</p>
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4" />

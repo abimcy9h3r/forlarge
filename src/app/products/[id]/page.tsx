@@ -9,6 +9,7 @@ import { AudioPreviewPlayer } from "@/components/AudioPreviewPlayer"
 import { SimilarProducts } from "@/components/SimilarProducts"
 import { CreatorProducts } from "@/components/CreatorProducts"
 import { PaymentButton } from "@/components/PaymentButton"
+import { ShareButton } from "@/components/ShareButton"
 import { ArrowLeft, ShoppingCart, Eye, Download, User } from "lucide-react"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
@@ -100,7 +101,10 @@ export default async function ProductPage({ params }: { params: { id: string } }
             </div>
 
             <div className="space-y-4">
-              <div className="text-5xl font-light text-sky-500">${product.price}</div>
+              <div className="flex items-center justify-between">
+                <div className="text-5xl font-light text-sky-500">${product.price}</div>
+                <ShareButton title={product.title} />
+              </div>
 
               <PaymentButton
                 productId={product.id}

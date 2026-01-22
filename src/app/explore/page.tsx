@@ -1,15 +1,17 @@
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Navbar } from "@/components/Navbar"
-import { Search } from "lucide-react"
+import { SearchInput } from "@/components/SearchInput"
 
-export default async function ExplorePage() {
+export default async function ExplorePage({
+  searchParams,
+}: {
+  searchParams?: {
+    q?: string
+    page?: string
+  }
+}) {
   const supabase = await createClient()
+  const query = searchParams?.q || ""
 
-  const { data: products } = await supabase
+  let queryBuilder = supabase
     .from("products")
     .select(`
       *,
@@ -20,13 +22,19 @@ export default async function ExplorePage() {
       )
     `)
     .eq("is_published", true)
+
+  if (query) {
+    queryBuilder = queryBuilder.ilike('title', `%${query}%`)
+  }
+
+  const { data: products } = await queryBuilder
     .order("created_at", { ascending: false })
     .limit(12)
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 sm:px-8 py-12 md:py-16 space-y-12 mt-16 md:mt-0">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <h1 className="text-5xl md:text-6xl font-light tracking-tight">
@@ -35,14 +43,8 @@ export default async function ExplorePage() {
           <p className="text-xl text-muted-foreground font-light">
             Discover beats, samples, and digital products from creators worldwide
           </p>
-          
-          <div className="relative max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              placeholder="Search products..."
-              className="pl-12 h-14 font-light"
-            />
-          </div>
+
+          <SearchInput />
         </div>
 
         {products && products.length > 0 ? (
