@@ -1,4 +1,8 @@
+import { createClient } from "@/lib/supabase/server"
 import { SearchInput } from "@/components/SearchInput"
+import { Navbar } from "@/components/Navbar"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 export default async function ExplorePage({
   searchParams,

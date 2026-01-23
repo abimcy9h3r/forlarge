@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         // Let's first fetch the transaction to get details directly from DB for security
         // and to ensure we have the right productId and buyer wallet.
 
-        const supabase = createClient();
+        const supabase = await createClient();
         const { data: transaction, error: txError } = await supabase
             .from('transactions')
             .select('*, products(*)')
